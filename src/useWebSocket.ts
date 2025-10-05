@@ -11,6 +11,7 @@ export function useWebSocket(wsUrl: string) {
     const timerRef = useRef<number | null>(null);
 
     const connect = useCallback(() => {
+        console.log("connecting...");
         if (wsRef.current && (wsRef.current.readyState === WebSocket.OPEN || wsRef.current.readyState === WebSocket.CONNECTING)) {
             return;
         }
@@ -50,15 +51,33 @@ export function useWebSocket(wsUrl: string) {
         };
     }, [connect]);
 
+    /** Clear current results immediately (used when user starts typing or clears input). */
+    const clearResults = useCallback(() => {
+        setResults([]);
+    }, []);
+
+    /** Notify the hook a new search session started (clear + cancel pending send). */
+    const beginNewSearch = useCallback(() => {
+        if (timerRef.current) window.clearTimeout(timerRef.current);
+        clearResults();
+    }, [clearResults]);
+
     /** Client-side micro-debounce before sending (server also debounces). */
     const sendTerm = useCallback((term: string, delayMs = 120) => {
+        console.log("sendTerm...");
         if (timerRef.current) window.clearTimeout(timerRef.current);
+        // If term is empty: clear results and don't send anything
+        if (!term || term.trim().length === 0) {
+            clearResults();
+            return;
+        }
         timerRef.current = window.setTimeout(() => {
             if (wsRef.current?.readyState === WebSocket.OPEN) {
+                console.log("do SendTerm...");
                 wsRef.current.send(term);
             }
         }, delayMs) as unknown as number;
-    }, []);
+    }, [clearResults]);
 
-    return { state, results, sendTerm };
+    return { state, results, sendTerm, beginNewSearch, clearResults };
 }
