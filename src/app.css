@@ -3,9 +3,13 @@
 }
 
 .container {
-    max-width: 880px;
+    max-width: 1000px;
     margin: 2rem auto;
     padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow: hidden;
 }
 
 header {
@@ -25,22 +29,9 @@ header {
     width: 520px;
 }
 
-.search input {
-    width: 100%;
-    font-size: 1.1rem;
-    padding: .6rem .7rem;
-    margin: 1rem 0;
-}
-
-.grid table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.grid th, .grid td {
-    border-bottom: 1px solid #eee;
-    padding: .5rem .4rem;
-    text-align: left;
+.status {
+    min-width: 120px;
+    text-transform: capitalize;
 }
 
 .empty {
@@ -48,7 +39,112 @@ header {
     padding: .8rem 0;
 }
 
-.status {
-    min-width: 120px;
-    text-transform: capitalize;
+/* Scroll container below the page header */
+.content {
+    --search-h: 56px;
+    --header-h: 40px;
+    flex: 1; /* take remaining height */
+    min-height: 0; /* allow children to shrink */
+    overflow-y: auto;              /* vertical scroll only */
+    overflow-x: hidden;            /* NO horizontal scroll here */
+    display: flex;
+    flex-direction: column;
+    scrollbar-gutter: stable both-edges;
+}
+
+/* Pinned search bar (inside .content) */
+.search.pinned {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: white;
+    padding-top: 8px;
+    left: 0; right: 0;
+}
+.container .row {
+    display: flex;
+    width: 100%;
+}
+.container input {
+    width: 100%;
+}
+.search .row {
+    display: flex;
+    width: 100%;
+}
+.search input {
+    width: 85%;
+    font-size: 1.1rem;
+    padding: .6rem .7rem;
+    margin: 0 0 8px 1px;
+    border: 1px solid #e4e4e4;
+    border-radius: 8px;
+}
+
+/* Flex grid */
+.flex-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;                  /* allow children to shrink */
+}
+
+/* Columns layout via flex */
+.grid-header,
+.grid-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    padding: 8px 6px;
+    min-width: 0;                  /* critical for flex shrink */
+}
+
+.grid-header {
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+    background: #fafafa;
+}
+
+/* Pinned header sits under the search bar */
+.grid-header.pinned {
+    position: sticky;
+    top: var(--search-h); /* below the pinned search */
+    z-index: 9;
+    left: 0; right: 0;             /* stay pinned on horizontal movement */
+}
+
+.grid-body {
+    display: block; /* children are rows */
+}
+
+.grid-row {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.grid-row:nth-child(2n) {
+    background: #fcfcfc;
+}
+
+/* Column sizing */
+.cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.col-id {
+    flex: 0 0 70px;
+}
+
+.col-title {
+    flex: 1 1 240px;
+}
+
+.col-desc {
+    flex: 2 1 420px;
+}
+
+.col-score {
+    flex: 0 0 90px;
+    text-align: right;
 }
